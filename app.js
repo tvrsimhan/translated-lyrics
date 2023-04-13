@@ -31,4 +31,9 @@ app.get("/", async (req, res) => {
         indexHTML
     )
 })
+
+app.get("/songList", (_, res) => {
+    res.status(200).send(songs)
+})
+
 })
