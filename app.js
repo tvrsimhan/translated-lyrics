@@ -36,4 +36,12 @@ app.get("/songList", (_, res) => {
     res.status(200).send(songs)
 })
 
+app.get("/song/:songName", async (req, res) => {
+    const songName = req.params.songName
+    if (songs.includes(songName)) {
+        const song = await fs.readFile(path.join("songs", songName), "utf8")
+        res.status(200).send(song)
+    } else {
+        res.status(404).send({ message: "Song not found" })
+    }
 })
