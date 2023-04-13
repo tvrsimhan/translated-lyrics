@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ta">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tamil</title>
+</head>
+
+<body>
+    <p id="magic">
+        பழைய ஆக்கங்கள் பொ.ஊ.மு. 4-ஆம் நூற்றாண்டுக்கும் பொ.ஊ. 3-ஆம் நூற்றாண்டுக்கும் இடைப்பட்ட காலத்தில்
+        இயற்றப்பட்டிருக்கலாம் எனக் காட்டுகின்றன. இன்று கிடைக்கக்கூடிய மிகப் பழைய ஆக்கம் தொல்காப்பியம் ஆகும். இது
+        பண்டைக்காலத் தமிழின் இலக்கணத்தை விளக்கும் ஒரு நூலாகும். இதன் சில பகுதிகள் பொ.ஊ.மு. 400-ஆம் ஆண்டு காலத்தில்
+        எழுதப்பட்டதாகக் கருதப்படுகின்றது. 2005-இல் அகழ்ந்தெடுக்கப்பட்ட சான்றுகள், தமிழ் எழுத்து மொழியைக் பொ.ஊ.மு.
+        600-ஆம் ஆண்டிற்கும் முன் தள்ளியுள்ளன.[20] பண்டைத் தமிழில் எழுதப்பட்ட குறிப்பிடத்தக்க காப்பியம், பொ.ஊ.மு. 200
+        முதல் பொ.ஊ. 200 காலப்பகுதியைச் சேர்ந்த சிலப்பதிகாரம் ஆகும்.
+    </p>
+
+    <button type="button">Translate All Songs</button>
+
+    <script>
+
+        let unTranslated = []
+
+        let magic = document.getElementById("magic")
+        let songList = []
+        async function init() {
+            let request = await fetch("/songList")
+            songList = await request.json()
+        }
+
+        init()
+
+        async function translate() {
+            for (let song of songList) {
+                console.log("Getting song: " + song)
+                let songContent = await fetch(`/song/${song}`)
+                songContent = await songContent.text()
+
+                magic.innerHTML = songContent
+
+                let lastWord = songContent.split(" ").pop()
+                let lastLastWord = songContent.split(" ").slice(-2).join(" ")
+
+                // await new Promise((resolve) => {
+                //     let interval = setInterval(() => {
+
+                //         if (songContent !== magic.innerText) {
+                //             clearInterval(interval)
+                //             resolve()
+                //         }
+
+                //     }, 100)
+                // })
+
+                // wait for 3 seconds
+                await new Promise((resolve) => {
+                    setTimeout(() => {
+                        resolve()
+                    }, 3000)
+                })
+
+                let translatedText = magic.innerText
+                let songName = song
+                let body = {
+                    translatedLyrics: translatedText,
+                    songName: songName,
+                }
+                let options = {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(body),
+                }
+                console.log("Sending translated song: " + song)
+                let response = await fetch(`/saveSong`, options)
+                let data = await response.json()
+                console.log(data)
+            }
+        }
+
+        document.querySelector("button").addEventListener("click", translate)
+
+    </script>
+</body>
+
+</html>
