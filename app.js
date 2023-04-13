@@ -36,6 +36,23 @@ app.get("/songList", (_, res) => {
     res.status(200).send(songs)
 })
 
+app.get("/song", (_, res) => {
+    res.status(400).send({ message: "Bad request" })
+})
+
+app.post("/saveSong", async (req, res) => {
+    const translatedLyrics = req.body.translatedLyrics
+    const songName = req.body.songName
+
+    if (!translatedLyrics || !songName) {
+        res.status(400).send({ message: "Bad request" })
+    }
+
+    await fs.writeFile(path.join("output", songName), translatedLyrics, "utf8")
+
+    res.status(200).send({ message: "Song saved" })
+})
+
 app.get("/song/:songName", async (req, res) => {
     const songName = req.params.songName
     if (songs.includes(songName)) {
